@@ -337,13 +337,18 @@ window.onload = function() {
         var counter = 0;
         
         //The background image
-        Crafty.e("2D,DOM,Text,Image").image('img/menu.png').attr({
+        Crafty.e("2D,DOM,Text,Image").image('img/blue_fire_miti.png').attr({
             x: 0,
             y: 0,
             w: width,
             h: height
         });
-        //Baseline
+
+        /**
+         * Current player
+         */
+
+        //Current player baseline
         Crafty.e("2D,DOM,Text,Image").image('img/baseline_white.png').attr({
             x: 25,
             y: 520,
@@ -351,7 +356,8 @@ window.onload = function() {
             w: width,
             h: height
         });
-        //The score text
+
+        //The current player score text
         Crafty.e("Score,2D,DOM,Text,TextFormat").text("Score : " + this.score).textColor("#000000").textFont({
             size: "16px",
             family: "nt"
@@ -360,7 +366,7 @@ window.onload = function() {
             y: 615,
             width: width
         })
-        //The hp text
+        //The hp current player text
         Crafty.e("Hp,2D,DOM,Text,TextFormat").text("HP : " + hp).textColor("#000000").textFont({
             size: "16px",
             family: "nt"
@@ -369,6 +375,7 @@ window.onload = function() {
             y: 615,
             width: width
         })
+        /*
         //The current player text
         Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
             size: "20px",
@@ -378,6 +385,50 @@ window.onload = function() {
             y: 570,
             w: width
         }).css('text-align', 'center')
+        */
+        /**
+         * Opponent player
+         */
+        
+        Crafty.e("2D,DOM,Text,Image").image('img/baseline_white.png').attr({
+            x: 420,
+            y: 520,
+            //Middle at 521, for now put at 519 to 523
+            w: width,
+            h: height
+        });
+
+        //The opponent player score text
+        Crafty.e("Score,2D,DOM,Text,TextFormat").text("Score : " + this.score).textColor("#000000").textFont({
+            size: "16px",
+            family: "nt"
+        }).attr({
+            x: 445,
+            y: 615,
+            width: width
+        })
+        //The hp opponent player text
+        Crafty.e("Hp,2D,DOM,Text,TextFormat").text("HP : " + hp).textColor("#000000").textFont({
+            size: "16px",
+            family: "nt"
+        }).attr({
+            x: 675,
+            y: 615,
+            width: width
+        })
+
+        /*
+        //The opponent player text
+        Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
+            size: "20px",
+            family: "nt"
+        }).attr({
+            x: -200,
+            y: 570,
+            w: width
+        }).css('text-align', 'center')
+        */
+
         //Display the current player text
         .bind("KeyDown", function(e) {
             function isAlphabet(c) {
@@ -550,7 +601,7 @@ window.onload = function() {
         Crafty.audio.add("type_correct", "sound/click.wav");
         Crafty.audio.add("type_wrong", "sound/fire.wav");
         Crafty.audio.add("hit", "sound/laser.wav");
-        Crafty.audio.add("bg", "sound/Evil Lead Synth.mp3");
+        //Crafty.audio.add("bg", "sound/Evil Lead Synth.mp3");
         Crafty.audio.add("space", "sound/space.mp3");
         Crafty.load(['img/bg.png', 'img/menu.png', 'img/single.png',
                      'sound/space.mp3','sound/click.wav', 'sound/fire.wav'
