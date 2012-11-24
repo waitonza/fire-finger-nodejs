@@ -19,7 +19,7 @@ app.post('/', function (req, res) {
 
 // TODO make port configurable
 // if you going to change this you also will need to change port in the connection line in ./public/pong.js
-
+/*
 var buffer = []
   , number_of_rooms = 5
   , rooms = []
@@ -118,3 +118,4 @@ io.sockets.on('connection', function (socket) {
     io.sockets.json.emit('list_of_rooms', get_list_of_rooms());
   })
 });
+*/
