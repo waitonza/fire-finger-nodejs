@@ -76,16 +76,16 @@
     });
   }
 
-  function postToFeed() {
+  function postToFeed(score) {
 
         // calling the API ...
         var obj = {
           method: 'feed',
-          link: 'https://developers.facebook.com/docs/reference/dialogs/',
-          picture: 'http://fbrell.com/f8.jpg',
-          name: 'Facebook Dialogs',
-          caption: 'Reference Documentation',
-          description: 'Using Dialogs to interact with users.'
+          link: 'https://apps.facebook.com/fire-finger/',
+          picture: 'http://fire-finger.herokuapp.com/img/game-logo.png',
+          name: 'Fire Finger Score',
+          caption: 'Your score of Fire Finger',
+          description: 'You got ' + score + ' points.'
         };
 
         function callback(response) {
@@ -95,14 +95,14 @@
         FB.ui(obj, callback);
   }
 
-  function postToFeed(sendto) {
+  function postToFeedWithFriend(sendto) {
 
         // calling the API ...
         var obj = {
           method: 'feed',
-          link: 'https://developers.facebook.com/docs/reference/dialogs/',
-          picture: 'http://fbrell.com/f8.jpg',
-          name: 'Facebook Dialogs',
+          link: 'https://apps.facebook.com/fire-finger/',
+          picture: 'http://fire-finger.herokuapp.com/img/game-logo.png',
+          name: 'Fire Finger Score',
           to: sendto,
           caption: 'Reference Documentation',
           description: 'Using Dialogs to interact with users.'
@@ -115,19 +115,19 @@
         FB.ui(obj, callback);
   }
 
-function sendRequestTo(id) {
-    FB.ui({method: 'apprequests',
-      message: 'Fire Finger invite Request',
-      to: id
-    }, requestCallback);
-}
+      function sendRequestTo(id) {
+        FB.ui({method: 'apprequests',
+          message: 'Fire Finger invite Request',
+          to: id
+        }, requestCallback);
+      }
 
-function sendRequestViaMultiFriendSelector() {
-    FB.ui({method: 'apprequests',
-      message: 'Fire Finger invite Request'
-    }, requestCallback);
-}
-
-function requestCallback(response) {
-    // Handle callback here
-}
+      function sendRequestViaMultiFriendSelector() {
+        FB.ui({method: 'apprequests',
+          message: 'Fire Finger invite Request'
+        }, requestCallback);
+      }
+      
+      function requestCallback(response) {
+        // Handle callback here
+      }
