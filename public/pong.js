@@ -176,11 +176,6 @@ var init = function() {
   set_keyboard_bindings_for(current_player_shape);
 }
 
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
-
 var socket = io.connect();
 
 // messages could be 6 types
