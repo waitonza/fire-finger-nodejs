@@ -5,8 +5,11 @@ var app = express();
 
 var server = module.exports = http.createServer(app);
 var io = require("socket.io").listen(server);
+var port = process.env.PORT || 8080;
 
-server.listen(8080);
+server.listen(port, function() {
+  console.log("Listening on " + port);
+});
 
 app.use(express.static(__dirname + '/public'));
 
