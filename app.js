@@ -53,6 +53,11 @@ function find_room_and_disconnect_by_session_id(id) {
   }
 }
 
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 io.sockets.on('connection', function (socket) {
   socket.emit('list_of_rooms', get_list_of_rooms());  
   
