@@ -2,7 +2,7 @@ $.facebox.settings.closeImage = 'facebox/closelabel.png';
 $.facebox.settings.loadingImage = 'facebox/loading.gif';
 var ctx    = document.getElementById('main_canvas').getContext('2d');
 
-var TICK_INTERVAL  = 25;
+var TICK_INTERVAL  = 60;
 
 var CANVAS_HEIGHT  = 500;
 var CANVAS_WIDTH   = 500;
