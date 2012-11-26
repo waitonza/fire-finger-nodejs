@@ -1,5 +1,7 @@
 "use strict";
 
+var socket = io.connect();
+
 window.onload = function() {
     var width = 760;
     var height = 640;
@@ -59,7 +61,7 @@ window.onload = function() {
             this.textColor("#ffffff");
         });
         //Multiplayer text
-        Crafty.e("Multi ,2D,DOM,Text,TextFormat,Mouse").text("MULTI PLAYER").textColor("#ffffff").textFont({
+        Crafty.e("Muti-menu ,2D,DOM,Text,TextFormat,Mouse").text("MULTI PLAYER").textColor("#ffffff").textFont({
             size: "20px",
             family: "Trebuchet MS",
             type: "Bold"
@@ -70,7 +72,7 @@ window.onload = function() {
             h: 20
         }).css('text-align', 'center')
         .bind("Click",function(){
-            Crafty.scene("Multi");
+            Crafty.scene("Multi-menu");
         }).bind("MouseOver",function(){
             this.textColor("#ff0000");
         }).bind("MouseOut",function(){
@@ -321,6 +323,274 @@ window.onload = function() {
             });
         })
     });
+
+    //The Mutiplayer Menu scene
+    Crafty.scene("Multi-menu", function() {
+        Crafty.audio.play("bg",-1,0.5);
+        //The background image
+        Crafty.e("2D,DOM,Text,Image").image('img/bg.png').attr({
+            x: 0,
+            y: 0,
+            w: width,
+            h: height
+        });
+        //Game Name text
+        Crafty.e("Game,2D,DOM,Text,TextFormat,Mouse").text("MULTI PLAYER MENU").textColor("#ffffff").textFont({
+            size: "36px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 250,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        //Single player text
+        Crafty.e("Single,2D,DOM,Text,TextFormat,Mouse").text("PLAY WITH FRIEND").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 330,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click", function() {
+            //Crafty.scene("Single");
+        }).bind("MouseOver",function(){
+            this.textColor("#ff0000");
+        }).bind("MouseOut",function(){
+            this.textColor("#ffffff");
+        });
+        //Multiplayer text
+        Crafty.e("Multi ,2D,DOM,Text,TextFormat,Mouse").text("PLAY WITH RANDOM PLAYER").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 370,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click",function(){
+            Crafty.scene("Multi-waiting");
+        }).bind("MouseOver",function(){
+            this.textColor("#ff0000");
+        }).bind("MouseOut",function(){
+            this.textColor("#ffffff");
+        });
+        //Back text
+        Crafty.e("Back,2D,DOM,Text,TextFormat,Mouse").text("BACK").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 410,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click", function() {
+            Crafty.scene("Start");
+        }).bind("MouseOver",function(){
+            this.textColor("#ff0000");
+        }).bind("MouseOut",function(){
+            this.textColor("#ffffff");
+        });
+        //Developed by who text
+        Crafty.e("Developed,2D,DOM,Text,TextFormat").text("Developed by Spark Studio").textColor("#ffffff").textFont({
+            size: "14px",
+            family: "Trebuchet MS",
+            type: "Italic"
+        }).attr({
+            x: 0,
+            y: 620,
+            w: width
+        }).css('text-align', 'center');
+    });
+    
+    //The Mutiplayer Waiting Menu scene
+    Crafty.scene("Multi-waiting", function() {
+        Crafty.audio.play("bg",-1,0.5);
+        //The background image
+        Crafty.e("2D,DOM,Text,Image").image('img/bg.png').attr({
+            x: 0,
+            y: 0,
+            w: width,
+            h: height
+        });
+        //Game Name text
+        Crafty.e("Game,2D,DOM,Text,TextFormat,Mouse").text("MULTI PLAYER MENU").textColor("#ffffff").textFont({
+            size: "36px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 250,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        //Finding player text
+        Crafty.e("Single,2D,DOM,Text,TextFormat,Mouse").text("We're finding player, Waiting....").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 330,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click", function() {
+            socket.json.emit('connect', {room_id: 0, fb_id: userID, fb_name: my_name});
+            Crafty.scene("Multi");
+        });
+
+        //Player 1 detail
+        //pic
+        Crafty.e("2D,DOM,Text,Image").image(my_pic_url).attr({
+            x: 270,
+            y: 400,
+            w: width,
+            h: height
+        });
+
+        //first name
+        Crafty.e("P1_fname,2D,DOM,Text,TextFormat,Mouse").text(my_first_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: -85,
+            y: 460,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //last name
+        Crafty.e("P1_lname,2D,DOM,Text,TextFormat,Mouse").text(my_last_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: -85,
+            y: 485,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //VS text
+        Crafty.e("VS,2D,DOM,Text,TextFormat,Mouse").text("VS").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 400,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+
+        //Blank player detail
+        //pic
+        Crafty.e("2D,DOM,Text,Image").image('img/blank_fb_profile.jpg').attr({
+            x: 440,
+            y: 400,
+            w: width,
+            h: height
+        });
+
+        //first name
+        Crafty.e("P2_fname,2D,DOM,Text,TextFormat,Mouse").text('Waiting').textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 460,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //last name
+        Crafty.e("P2_lname,2D,DOM,Text,TextFormat,Mouse").text('Player').textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 485,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        /*
+        //Player 2 detail
+        //pic
+        Crafty.e("2D,DOM,Text,Image").image(my_pic_url).attr({
+            x: 440,
+            y: 400,
+            w: width,
+            h: height
+        });
+
+        //first name
+        Crafty.e("P2_fname,2D,DOM,Text,TextFormat,Mouse").text(my_first_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 460,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //last name
+        Crafty.e("P2_lname,2D,DOM,Text,TextFormat,Mouse").text(my_last_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 485,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+        */
+
+        //Cancel text
+        Crafty.e("Multi ,2D,DOM,Text,TextFormat,Mouse").text("CANCEL").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 550,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click",function(){
+            Crafty.scene("Multi-menu");
+        }).bind("MouseOver",function(){
+            this.textColor("#ff0000");
+        }).bind("MouseOut",function(){
+            this.textColor("#ffffff");
+        });
+        //Developed by who text
+        Crafty.e("Developed,2D,DOM,Text,TextFormat").text("Developed by Spark Studio").textColor("#ffffff").textFont({
+            size: "14px",
+            family: "Trebuchet MS",
+            type: "Italic"
+        }).attr({
+            x: 0,
+            y: 620,
+            w: width
+        }).css('text-align', 'center');
+    });
+
     Crafty.scene("Multi", function() {
         //Get the current FPS
         var FPS = +Crafty.timer.getFPS();
@@ -330,12 +600,23 @@ window.onload = function() {
         var player_text = "";
         var score = 0;
         var hp = 100;
+
+        //The current text of the play, current text that was typed.
+        var op_player_text = "";
+        var op_score = 0;
+        var op_hp = 100;
         
         // Current difficulty
         var second_per_word = 3;
         
         var counter = 0;
         
+        socket.on('score_sync', function(obj){
+            console.log(obj);
+            op_score = obj.player_score;
+            op_hp = obj.player_hp;
+        });
+
         //The background image
         Crafty.e("2D,DOM,Text,Image").image('img/blue_fire_miti.png').attr({
             x: 0,
@@ -399,7 +680,7 @@ window.onload = function() {
         });
 
         //The opponent player score text
-        Crafty.e("Score,2D,DOM,Text,TextFormat").text("Score : " + this.score).textColor("#000000").textFont({
+        Crafty.e("Op_Score,2D,DOM,Text,TextFormat").text("Score : " + this.op_score).textColor("#000000").textFont({
             size: "16px",
             family: "nt"
         }).attr({
@@ -408,7 +689,7 @@ window.onload = function() {
             width: width
         })
         //The hp opponent player text
-        Crafty.e("Hp,2D,DOM,Text,TextFormat").text("HP : " + hp).textColor("#000000").textFont({
+        Crafty.e("Op_Hp,2D,DOM,Text,TextFormat").text("HP : " + op_hp).textColor("#000000").textFont({
             size: "16px",
             family: "nt"
         }).attr({
@@ -423,12 +704,21 @@ window.onload = function() {
             size: "20px",
             family: "nt"
         }).attr({
-            x: -200,
+            x: 210,
             y: 570,
             w: width
         }).css('text-align', 'center')
         */
 
+        //The current player text
+        Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
+            size: "20px",
+            family: "nt"
+        }).attr({
+            x: -210,
+            y: 570,
+            w: width
+        }).css('text-align', 'center')
         //Display the current player text
         .bind("KeyDown", function(e) {
             function isAlphabet(c) {
@@ -514,6 +804,8 @@ window.onload = function() {
             if ( Crafty.frame() % ( Math.round(second_per_word) * FPS) == 0) {
                 
                 counter++;
+
+                
                 
                 if(counter % 5 == 0)
                     second_per_word = second_per_word * 0.9;
@@ -536,6 +828,15 @@ window.onload = function() {
                 if (current_word.width() + random_x >= 320) {
                     random_x = 335 - current_word.width();
                 }
+                
+                socket.json.emit('word_sync', {
+                    room_id: 0, 
+                    current_fb_id: userID, 
+                    text: current_word, 
+                    text_x: random_x, 
+                    text_y: -50,
+                });
+
                 Crafty.e("Words,2D,DOM,Text,TextFormat").text(function() {
                     return current_word;
                 }).textColor("#ffffff").textFont({
@@ -557,15 +858,30 @@ window.onload = function() {
                         } else {
                             score += this.text().length;
                         }
+                        socket.json.emit('score_sync', {
+                            room_id: 0, 
+                            current_fb_id: userID,
+                            player_score: score, 
+                            player_hp: hp
+                        });
                         this.destroy();
                     }
                 });
             }
+
             Crafty("Score").each(function() {
                 this.text("Score&nbsp:&nbsp;" + score);
+                //console.log(score);
             });
             Crafty("Hp").each(function() {
                 this.text("Hp&nbsp:&nbsp" + hp);
+                //console.log(hp);
+            });
+            Crafty("Op_Score").each(function() {
+                this.text("Score&nbsp:&nbsp;" + op_score);
+            });
+            Crafty("Op_Hp").each(function() {
+                this.text("Hp&nbsp:&nbsp" + op_hp);
             });
         })
     });
@@ -634,3 +950,96 @@ String.prototype.width = function(font) {
     o.remove();
     return w;
 }
+
+
+
+// messages could be 6 types
+// 1. - 1st/2nd player connected
+// 2. - round could be started (so player 1 couldn't start if player 2 hadn't connected yet)
+// 3. - round just began, synchronive initial position of the ball
+// 4. - sync token with information about current player's ball and racket's position
+// 5. - ball went out of the field / who loose / new round
+// 6. - player in the same room has been disconnected
+socket.on('list_of_rooms', function(obj){
+    console.log(obj);
+});
+
+socket.on('word_sync', function(obj){
+    var baseLine = 535;
+    Crafty.e("Op_Words,2D,DOM,Text,TextFormat").text(obj.text).textColor("#ffffff").textFont({
+        size: "16px",
+        family: "Trebuchet MS"
+    }).attr({
+        x: obj.text_x + 395,
+        y: obj.text_y,
+        h: 10
+    }).bind("EnterFrame", function() {
+        this.y += 1;
+        if (this.y == baseLine) {
+            this.destroy();
+        }
+    });
+});
+
+socket.on('player_connected', function(obj){
+  /*
+  // if user just connected to the server (current_player_id undefined) then init() all (if this is 1st player then draw ball near him)
+  if(!current_player_id) {
+    current_player_id = obj.player_id;
+    init();
+  } else {
+    // if user was in room alone (he was player #1) and then switched to another room with one player he should be player #2 here
+    if(obj.player_id == 2 && current_player_id == 1 && current_room_id != obj.room_id) {
+      current_player_id = 2;
+    }
+  }
+  
+  current_room_id = obj.room_id;
+  console.log(current_room_id);
+  */
+/*
+  if(obj.player1_country && !obj.player2_country) {
+    jQuery('#player1_flag').html('<img src="country_icons/' + obj.player1_country.code + '.png" width="16" height="11" title="' + obj.player1_country.name + '" alt="' + obj.player1_country.name + '"/ >');
+  } else if(obj.player1_country && obj.player2_country) {
+    jQuery('#player1_flag').html('<img src="country_icons/' + obj.player1_country.code + '.png" width="16" height="11" title="' + obj.player1_country.name + '" alt="' + obj.player1_country.name + '"/ >');
+    jQuery('#player2_flag').html('<img src="country_icons/' + obj.player2_country.code + '.png" width="16" height="11" title="' + obj.player2_country.name + '" alt="' + obj.player2_country.name + '"/ >');
+  }
+  // and wait till 2nd user connects to the game  
+*/
+});
+
+
+socket.on('round_could_be_started', function(obj){
+    console.log(obj);
+/*
+  if(obj.room_id == window.room_id) {
+    round_could_be_started = true;
+
+    if(jQuery('#player1_notice_audio')[0].play && jQuery('#play_sound_when_someone_joins_the_room')[0].checked) {
+      jQuery('#player1_notice_audio')[0].play();
+    }
+
+    jQuery.facebox('Round could be started: you could press spacebar to start!');
+    setTimeout(function() { jQuery.facebox.close() }, 3000); // automatically close the alert after 3 seconds
+  }
+*/
+});
+
+socket.on('round_started', function(obj){
+/*
+  if(obj.room_id == window.room_id) {
+    ball.set_coordinates(obj);
+    start_round();
+  }
+*/
+});
+
+socket.on('end_of_the_round', function(obj){
+/*
+  if(obj.room_id == window.room_id) {
+    window.player_id_having_the_ball = obj.player_id_having_the_ball;
+    if(round_started) finish_round(obj.player_won);
+    //switch_bats();
+  }
+*/
+});

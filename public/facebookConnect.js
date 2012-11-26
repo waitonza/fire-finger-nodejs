@@ -1,9 +1,21 @@
-  var accessToken;
-  var userID;
+// My profile
+var accessToken;
+var userID;
+var my_name;
+var my_first_name;
+var my_last_name;
+var my_pic_url;
 
-  // Additional JS functions here
-  window.fbAsyncInit = function() {
-    FB.init({
+// Oppentant profile
+var op_userID;
+var op_name;
+var op_first_name;
+var op_last_name;
+var op_pic_url;
+
+// Additional JS functions here
+window.fbAsyncInit = function() {
+  FB.init({
       appId      : '296376977130858', // App ID
       status     : true, // check login status
       cookie     : true, // enable cookies to allow the server to access the session
@@ -14,13 +26,13 @@
     FB.getLoginStatus(function(response) {
       console.log(response);
       
-    if (response.status === 'connected') {
+      if (response.status === 'connected') {
       // connected
       console.log('Logined');
       //logout();
       accessToken = response.authResponse.accessToken;
       userID = response.authResponse.userID;
-      friendListAPI();
+      myProfileAPI();
     } else if (response.status === 'not_authorized') {
       // not_authorized
       console.log('Not Autorized');
@@ -30,33 +42,47 @@
       console.log('Not Login');
       login();
     }
-   });
+  });
   };
 
   // Load the SDK Asynchronously
   (function(d){
-     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement('script'); js.id = id; js.async = true;
-     js.src = "//connect.facebook.net/en_US/all.js";
-     ref.parentNode.insertBefore(js, ref);
-   }(document));
+   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+   if (d.getElementById(id)) {return;}
+   js = d.createElement('script'); js.id = id; js.async = true;
+   js.src = "//connect.facebook.net/en_US/all.js";
+   ref.parentNode.insertBefore(js, ref);
+ }(document));
 
   function login() {
+    console.log('login ui');
     FB.login(function(response) {
-        if (response.authResponse) {
+      if (response.authResponse) {
             // connected
-        } else {
+          } else {
             // cancelled
-        }
-    });
+          }
+        });
   }
 
-  function friendListAPI() {
+  function myProfileAPI() {
     console.log('Welcome!  Fetching your information.... ');
+
+    var url = '/me?fields=id,name,first_name,last_name';
+    FB.api(url, function(response) {
+
+      console.log(response);
+      my_name = response.name;
+      my_first_name = response.first_name;
+      my_last_name = response.last_name;
+      my_pic_url = "https://graph.facebook.com/"+userID+"/picture";
+    });
+    /*
     var url = '/me/friends?access_token=' + accessToken;
     FB.api(url, function(response) {
-        console.log(response);
+
+      console.log(response);
+        
         for (var i = 0; i < response.data.length; i++) {
           var friend = response.data[i];
           var x = document.getElementById("FBfriendlist");
@@ -66,17 +92,19 @@
           var z = '<tr><td><img src="'+url+'"></td><td>'+friend.name+'</td><td><button onclick="'+fun+'">Post it!</button></td><td><button onclick="'+request+'">Send it!</button></td></tr>';
           x.innerHTML += z;
         };
+        
         //console.log('Good to see you, ' + response.name + '.');
-    });
+      });
+*/
   }
 
-  function logout() {
-    FB.logout(function(response) {
+function logout() {
+  FB.logout(function(response) {
       // user is now logged out
     });
-  }
+}
 
-  function postToFeed(score) {
+function postToFeed(score) {
 
         // calling the API ...
         var obj = {
@@ -93,9 +121,9 @@
         }
 
         FB.ui(obj, callback);
-  }
+      }
 
-  function postToFeedWithFriend(sendto) {
+      function postToFeedWithFriend(sendto) {
 
         // calling the API ...
         var obj = {
@@ -113,7 +141,7 @@
         }
 
         FB.ui(obj, callback);
-  }
+      }
 
       function sendRequestTo(id) {
         FB.ui({method: 'apprequests',
