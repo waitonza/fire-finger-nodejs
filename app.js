@@ -5,7 +5,7 @@ var app = express();
 
 var server = module.exports = http.createServer(app);
 var io = require("socket.io").listen(server);
-var port = process.env.PORT;
+var port = 24536;
 
 server.listen(port, function() {
   console.log("Listening on " + port);
