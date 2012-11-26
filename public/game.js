@@ -488,7 +488,7 @@ window.onload = function() {
             type: "Bold"
         }).attr({
             x: 0,
-            y: 400,
+            y: 410,
             w: width,
             h: 20
         }).css('text-align', 'center')
