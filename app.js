@@ -58,7 +58,7 @@ function find_room_and_disconnect_by_session_id(id) {
 }
 
 io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
+  io.set("transports", ["websocket", "flashsocket", "xhr-polling"]); 
   io.set("polling duration", 1);
   io.set('log level', 1); // reduce logging
 });
