@@ -10,6 +10,10 @@ var comfirm_p2 = false;
 var end_game = false;
 var rooms_lists;
 
+function startWith(str, pattern) {
+    return pattern.length > 0 && pattern == str.substr(0, pattern.length);
+}
+
 window.onload = function() {
     //create the canvas
     Crafty.init(width, height);
@@ -588,6 +592,15 @@ window.onload = function() {
 
         });
 
+        socket.on('player_ty_sync', function(obj){
+            
+            if (current_player_id == 1 && obj.current_player_id == 2) {
+                op_player_text = obj.player_text;
+            } else if (current_player_id == 2 && obj.current_player_id == 1) {
+                op_player_text = obj.player_text;
+            }
+        });
+
         //The background image
         Crafty.e("2D,DOM,Text,Image").image('img/blue_fire_miti.png').attr({
             x: 0,
@@ -627,8 +640,9 @@ window.onload = function() {
             y: 615,
             width: width
         })
-        /*
+        
         //The current player text
+        /*
         Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
             size: "20px",
             family: "nt"
@@ -638,6 +652,7 @@ window.onload = function() {
             w: width
         }).css('text-align', 'center')
         */
+        
 
         /**
          * Opponent player
@@ -670,9 +685,9 @@ window.onload = function() {
             width: width
         })
 
-        /*
+        
         //The opponent player text
-        Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
+        Crafty.e("Op_Player,2D,DOM,Text,TextFormat").text('op_player_text').textColor("#000000").textFont({
             size: "20px",
             family: "nt"
         }).attr({
@@ -680,7 +695,6 @@ window.onload = function() {
             y: 570,
             w: width
         }).css('text-align', 'center')
-        */
 
         //The current player text
         Crafty.e("Player,2D,DOM,Text,TextFormat").text(player_text).textColor("#000000").textFont({
@@ -691,8 +705,11 @@ window.onload = function() {
             y: 570,
             w: width
         }).css('text-align', 'center')
+
+
         //Display the current player text
         .bind("KeyDown", function(e) {
+
             function isAlphabet(c) {
                 return /^[a-zA-Z()]$/.test(c);
             }
@@ -703,11 +720,18 @@ window.onload = function() {
             
             if (isAlphabet(String.fromCharCode(e.key))) {
                 
+                
                 if (player_text.length == 0) player_text += String.fromCharCode(e.key).toUpperCase();
                 else player_text += String.fromCharCode(e.key).toLowerCase();
                 
                 var match = false;
                 
+                socket.json.emit('player_ty_sync', {
+                    room_id: current_room_id, 
+                    current_player_id: current_player_id,
+                    player_text: player_text
+                });
+
                 Crafty("Words").each(function() {
                     
                     if( this._textColor == "rgb(0,255,0)" || player_text.length == 0 ) return;
@@ -742,6 +766,8 @@ window.onload = function() {
                 }else{
                     Crafty.audio.play("type_correct");
                 }
+
+
                 
             }else if( e.key == Crafty.keys["SPACE"] ){
                 player_text = "";
@@ -767,6 +793,7 @@ window.onload = function() {
             Crafty("Player").each(function() {
                 this.text(player_text);
             })
+
         });
         
         Crafty.e().bind("EnterFrame", function() {
@@ -860,6 +887,22 @@ window.onload = function() {
             });
             Crafty("Op_Hp").each(function() {
                 this.text("Hp&nbsp:&nbsp" + op_hp);
+            });
+            Crafty("Op_Player").each(function() {
+                this.text(op_player_text);
+            });
+
+            Crafty("Op_Words").each(function() {
+                if( this._textColor == "rgb(0,255,0)" || op_player_text.length == 0 ) return;
+                
+                if( op_player_text == this.text() ){
+                    this.textColor("#00ff00");
+                    op_player_text = "";
+                }else if (startWith(this.text(), op_player_text)){
+                    this.textColor("#ff0000");
+                }else{
+                    this.textColor("#ffffff");
+                }
             });
         })
     });
