@@ -1,10 +1,16 @@
 "use strict";
 
 var socket = io.connect();
+var current_room_id;
+var current_player_id;
+var width = 760;
+var height = 640;
+var comfirm_p1 = false;
+var comfirm_p2 = false;
+var end_game = false;
+var rooms_lists;
 
 window.onload = function() {
-    var width = 760;
-    var height = 640;
     //create the canvas
     Crafty.init(width, height);
     Crafty.canvas.init();
@@ -54,6 +60,7 @@ window.onload = function() {
             h: 20
         }).css('text-align', 'center')
         .bind("Click", function() {
+            Crafty.scene("Single");
             Crafty.scene("Single");
         }).bind("MouseOver",function(){
             this.textColor("#ff0000");
@@ -305,7 +312,7 @@ window.onload = function() {
                         if (this._textColor != "rgb(0,255,0)") {
                             hp -= this.text().length;
                             if( hp <= 0 ){
-                                postToFeed(score);
+                                postToFeedSingle(score);
                                 Crafty.scene("Over");
                             }
                         } else {
@@ -375,6 +382,7 @@ window.onload = function() {
             h: 20
         }).css('text-align', 'center')
         .bind("Click",function(){
+            socket.json.emit('list_of_rooms', { test: 1 });
             Crafty.scene("Multi-waiting");
         }).bind("MouseOver",function(){
             this.textColor("#ff0000");
@@ -414,6 +422,17 @@ window.onload = function() {
     //The Mutiplayer Waiting Menu scene
     Crafty.scene("Multi-waiting", function() {
         Crafty.audio.play("bg",-1,0.5);
+        var pass = false;
+        for (var i = 0; i < 10; i++) {
+            if(rooms_lists.rooms[i].number_of_connected_players == 1) {
+                socket.json.emit('connect', {room_id: i, fb_id: userID, fb_name: my_name, fb_first_name: my_first_name, fb_last_name: my_last_name});
+                pass = true;
+            }   
+        }
+        if (!pass) {
+            current_room_id = Math.floor((Math.random()*10));
+            socket.json.emit('connect', {room_id: current_room_id, fb_id: userID, fb_name: my_name, fb_first_name: my_first_name, fb_last_name: my_last_name});
+        }
         //The background image
         Crafty.e("2D,DOM,Text,Image").image('img/bg.png').attr({
             x: 0,
@@ -444,13 +463,12 @@ window.onload = function() {
             h: 20
         }).css('text-align', 'center')
         .bind("Click", function() {
-            socket.json.emit('connect', {room_id: 0, fb_id: userID, fb_name: my_name});
             Crafty.scene("Multi");
         });
 
         //Player 1 detail
         //pic
-        Crafty.e("2D,DOM,Text,Image").image(my_pic_url).attr({
+        Crafty.e("P1_fpic,2D,DOM,Text,Image").image(my_pic_url).attr({
             x: 270,
             y: 400,
             w: width,
@@ -495,7 +513,7 @@ window.onload = function() {
 
         //Blank player detail
         //pic
-        Crafty.e("2D,DOM,Text,Image").image('img/blank_fb_profile.jpg').attr({
+        Crafty.e("P2_fpic,2D,DOM,Text,Image").image('img/blank_fb_profile.jpg').attr({
             x: 440,
             y: 400,
             w: width,
@@ -526,59 +544,6 @@ window.onload = function() {
             h: 15
         }).css('text-align', 'center')
 
-        /*
-        //Player 2 detail
-        //pic
-        Crafty.e("2D,DOM,Text,Image").image(my_pic_url).attr({
-            x: 440,
-            y: 400,
-            w: width,
-            h: height
-        });
-
-        //first name
-        Crafty.e("P2_fname,2D,DOM,Text,TextFormat,Mouse").text(my_first_name).textColor("#ffffff").textFont({
-            size: "15px",
-            family: "Trebuchet MS",
-            type: "Bold"
-        }).attr({
-            x: 85,
-            y: 460,
-            w: width,
-            h: 15
-        }).css('text-align', 'center')
-
-        //last name
-        Crafty.e("P2_lname,2D,DOM,Text,TextFormat,Mouse").text(my_last_name).textColor("#ffffff").textFont({
-            size: "15px",
-            family: "Trebuchet MS",
-            type: "Bold"
-        }).attr({
-            x: 85,
-            y: 485,
-            w: width,
-            h: 15
-        }).css('text-align', 'center')
-        */
-
-        //Cancel text
-        Crafty.e("Multi ,2D,DOM,Text,TextFormat,Mouse").text("CANCEL").textColor("#ffffff").textFont({
-            size: "20px",
-            family: "Trebuchet MS",
-            type: "Bold"
-        }).attr({
-            x: 0,
-            y: 550,
-            w: width,
-            h: 20
-        }).css('text-align', 'center')
-        .bind("Click",function(){
-            Crafty.scene("Multi-menu");
-        }).bind("MouseOver",function(){
-            this.textColor("#ff0000");
-        }).bind("MouseOut",function(){
-            this.textColor("#ffffff");
-        });
         //Developed by who text
         Crafty.e("Developed,2D,DOM,Text,TextFormat").text("Developed by Spark Studio").textColor("#ffffff").textFont({
             size: "14px",
@@ -612,9 +577,15 @@ window.onload = function() {
         var counter = 0;
         
         socket.on('score_sync', function(obj){
-            console.log(obj);
-            op_score = obj.player_score;
-            op_hp = obj.player_hp;
+            
+            if (current_player_id == 1 && obj.current_player_id == 2) {
+                op_score = obj.player_score;
+                op_hp = obj.player_hp;
+            } else if (current_player_id == 2 && obj.current_player_id == 1) {
+                op_score = obj.player_score;
+                op_hp = obj.player_hp;
+            }
+
         });
 
         //The background image
@@ -667,6 +638,7 @@ window.onload = function() {
             w: width
         }).css('text-align', 'center')
         */
+
         /**
          * Opponent player
          */
@@ -799,14 +771,16 @@ window.onload = function() {
         
         Crafty.e().bind("EnterFrame", function() {
             
-            if( hp <= 0 ) return;
+            if (end_game) {
+                hp = 0;
+            }
+
+            if(hp <= 0) return;
             
             if ( Crafty.frame() % ( Math.round(second_per_word) * FPS) == 0) {
                 
                 counter++;
-
-                
-                
+    
                 if(counter % 5 == 0)
                     second_per_word = second_per_word * 0.9;
                 
@@ -830,8 +804,9 @@ window.onload = function() {
                 }
                 
                 socket.json.emit('word_sync', {
-                    room_id: 0, 
+                    room_id: current_room_id, 
                     current_fb_id: userID, 
+                    current_player_id: current_player_id,
                     text: current_word, 
                     text_x: random_x, 
                     text_y: -50,
@@ -852,14 +827,19 @@ window.onload = function() {
                         if (this._textColor != "rgb(0,255,0)") {
                             hp -= this.text().length;
                             if( hp <= 0 ){
-                                postToFeed(score);
-                                Crafty.scene("Over");
+                                socket.json.emit('end_of_the_round', {
+                                    room_id: current_room_id, 
+                                    who_lose: current_player_id,
+                                    player_score: score, 
+                                    op_score: op_score,
+                                });
                             }
                         } else {
                             score += this.text().length;
                         }
                         socket.json.emit('score_sync', {
-                            room_id: 0, 
+                            room_id: current_room_id, 
+                            current_player_id: current_player_id,
                             current_fb_id: userID,
                             player_score: score, 
                             player_hp: hp
@@ -871,11 +851,9 @@ window.onload = function() {
 
             Crafty("Score").each(function() {
                 this.text("Score&nbsp:&nbsp;" + score);
-                //console.log(score);
             });
             Crafty("Hp").each(function() {
                 this.text("Hp&nbsp:&nbsp" + hp);
-                //console.log(hp);
             });
             Crafty("Op_Score").each(function() {
                 this.text("Score&nbsp:&nbsp;" + op_score);
@@ -897,7 +875,6 @@ window.onload = function() {
             h: height
         });
         
-        
         Crafty.e("Over,2D,DOM,Text,TextFormat,Mouse").text("GAME OVER").textColor("#ffffff")
         .textFont({
             size: "40px",
@@ -909,6 +886,11 @@ window.onload = function() {
             w: width,
             h: height
         }).css('text-align', 'center').bind("Click", function() {
+            end_game = false;
+            current_room_id = undefined;
+            current_player_id = undefined;
+            comfirm_p1 = false;
+            comfirm_p2 = false;
             Crafty.scene("Start");
         });
         
@@ -961,32 +943,50 @@ String.prototype.width = function(font) {
 // 5. - ball went out of the field / who loose / new round
 // 6. - player in the same room has been disconnected
 socket.on('list_of_rooms', function(obj){
-    console.log(obj);
+    rooms_lists = obj;
 });
 
 socket.on('word_sync', function(obj){
     var baseLine = 535;
-    Crafty.e("Op_Words,2D,DOM,Text,TextFormat").text(obj.text).textColor("#ffffff").textFont({
-        size: "16px",
-        family: "Trebuchet MS"
-    }).attr({
-        x: obj.text_x + 395,
-        y: obj.text_y,
-        h: 10
-    }).bind("EnterFrame", function() {
-        this.y += 1;
-        if (this.y == baseLine) {
-            this.destroy();
+    if(obj.room_id == current_room_id) {
+        if (current_player_id == 1 && obj.current_player_id == 2) {
+            Crafty.e("Op_Words,2D,DOM,Text,TextFormat").text(obj.text).textColor("#ffffff").textFont({
+                size: "16px",
+                family: "Trebuchet MS"
+            }).attr({
+                x: obj.text_x + 395,
+                y: obj.text_y,
+                h: 10
+            }).bind("EnterFrame", function() {
+                this.y += 1;
+                if (this.y == baseLine) {
+                    this.destroy();
+                }
+            });
+        } else if (current_player_id == 2 && obj.current_player_id == 1) {
+            Crafty.e("Op_Words,2D,DOM,Text,TextFormat").text(obj.text).textColor("#ffffff").textFont({
+                size: "16px",
+                family: "Trebuchet MS"
+            }).attr({
+                x: obj.text_x + 395,
+                y: obj.text_y,
+                h: 10
+            }).bind("EnterFrame", function() {
+                this.y += 1;
+                if (this.y == baseLine) {
+                    this.destroy();
+                }
+            });
         }
-    });
+    }
+    
 });
 
 socket.on('player_connected', function(obj){
-  /*
+  
   // if user just connected to the server (current_player_id undefined) then init() all (if this is 1st player then draw ball near him)
   if(!current_player_id) {
     current_player_id = obj.player_id;
-    init();
   } else {
     // if user was in room alone (he was player #1) and then switched to another room with one player he should be player #2 here
     if(obj.player_id == 2 && current_player_id == 1 && current_room_id != obj.room_id) {
@@ -995,51 +995,126 @@ socket.on('player_connected', function(obj){
   }
   
   current_room_id = obj.room_id;
-  console.log(current_room_id);
-  */
-/*
-  if(obj.player1_country && !obj.player2_country) {
-    jQuery('#player1_flag').html('<img src="country_icons/' + obj.player1_country.code + '.png" width="16" height="11" title="' + obj.player1_country.name + '" alt="' + obj.player1_country.name + '"/ >');
-  } else if(obj.player1_country && obj.player2_country) {
-    jQuery('#player1_flag').html('<img src="country_icons/' + obj.player1_country.code + '.png" width="16" height="11" title="' + obj.player1_country.name + '" alt="' + obj.player1_country.name + '"/ >');
-    jQuery('#player2_flag').html('<img src="country_icons/' + obj.player2_country.code + '.png" width="16" height="11" title="' + obj.player2_country.name + '" alt="' + obj.player2_country.name + '"/ >');
-  }
-  // and wait till 2nd user connects to the game  
-*/
-});
+  console.log('Your current room : ' + current_room_id);
+  if(obj.room_id == current_room_id) {
+    if(obj.player1 && obj.player2) {
+        if (current_player_id == 1) {
+            op_userID = obj.player2.fb_id;
+            op_name = obj.player2.fb_name;
+            op_first_name = obj.player2.fb_first_name;
+            op_last_name = obj.player2.fb_last_name;
+            op_pic_url = "https://graph.facebook.com/"+op_userID+"/picture";
+        } else {
+            op_userID = obj.player1.fb_id;
+            op_name = obj.player1.fb_name;
+            op_first_name = obj.player1.fb_first_name;
+            op_last_name = obj.player1.fb_last_name;
+            op_pic_url = "https://graph.facebook.com/"+op_userID+"/picture";
+        }
 
+        Crafty("P2_fpic").each(function(){
+            this.destroy();
+        });
+        Crafty("P2_fname").each(function(){
+            this.destroy();
+        });
+        Crafty("P2_lname").each(function(){
+            this.destroy();
+        });
 
-socket.on('round_could_be_started', function(obj){
-    console.log(obj);
-/*
-  if(obj.room_id == window.room_id) {
-    round_could_be_started = true;
+        //Player 2 detail
+        //pic
+        Crafty.e("P2_fpic,2D,DOM,Text,Image").image(op_pic_url).attr({
+            x: 440,
+            y: 400,
+            w: width,
+            h: height
+        });
 
-    if(jQuery('#player1_notice_audio')[0].play && jQuery('#play_sound_when_someone_joins_the_room')[0].checked) {
-      jQuery('#player1_notice_audio')[0].play();
+        //first name
+        Crafty.e("P2_fname,2D,DOM,Text,TextFormat,Mouse").text(op_first_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 460,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //last name
+        Crafty.e("P2_lname,2D,DOM,Text,TextFormat,Mouse").text(op_last_name).textColor("#ffffff").textFont({
+            size: "15px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 85,
+            y: 485,
+            w: width,
+            h: 15
+        }).css('text-align', 'center')
+
+        //Cancel text
+        Crafty.e("Start ,2D,DOM,Text,TextFormat,Mouse").text("Start Game..").textColor("#ffffff").textFont({
+            size: "20px",
+            family: "Trebuchet MS",
+            type: "Bold"
+        }).attr({
+            x: 0,
+            y: 530,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click",function(){
+            //Crafty.scene("Multi-menu");
+            this.text("Waiting for opponent player start!..");
+            socket.json.emit('round_started', {
+                room_id: current_room_id, 
+                current_player_id: current_player_id
+            });
+            this.unbind("Click");
+        }).bind("MouseOver",function(){
+            this.textColor("#ff0000");
+        }).bind("MouseOut",function(){
+            this.textColor("#ffffff");
+        });
     }
-
-    jQuery.facebox('Round could be started: you could press spacebar to start!');
-    setTimeout(function() { jQuery.facebox.close() }, 3000); // automatically close the alert after 3 seconds
   }
-*/
+    
 });
 
 socket.on('round_started', function(obj){
-/*
-  if(obj.room_id == window.room_id) {
-    ball.set_coordinates(obj);
-    start_round();
+
+  if(obj.room_id == current_room_id) {
+    if (obj.current_player_id == 1) {
+        comfirm_p1 = true;
+    }
+    else {
+        comfirm_p2 = true;
+    }
   }
-*/
+
+  if (comfirm_p1 && comfirm_p2) {
+    Crafty.scene("Multi");
+  };
+
 });
 
 socket.on('end_of_the_round', function(obj){
-/*
-  if(obj.room_id == window.room_id) {
-    window.player_id_having_the_ball = obj.player_id_having_the_ball;
-    if(round_started) finish_round(obj.player_won);
-    //switch_bats();
-  }
-*/
+    end_game = true;
+    socket.json.emit('disconnect_room_id', { room_id: current_room_id });
+    if(obj.room_id == current_room_id) {
+        Crafty.scene("Over");
+        if (obj.player_score == obj.op_score) {
+            postToFeedMuti('You draw', obj.player_score, obj.op_score);
+        }
+        else if (obj.who_lose == current_player_id) {
+            // You lose
+            postToFeedMuti('You lose', obj.player_score, obj.op_score);
+        } else {
+            // You Win
+            postToFeedMuti('You win', obj.player_score, obj.op_score);
+        }
+    }
 });

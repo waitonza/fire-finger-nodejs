@@ -104,16 +104,36 @@ function logout() {
     });
 }
 
-function postToFeed(score) {
+      function postToFeedSingle(score) {
 
         // calling the API ...
         var obj = {
           method: 'feed',
           link: 'https://apps.facebook.com/fire-finger/',
           picture: 'http://fire-finger.herokuapp.com/img/game-logo.png',
-          name: 'Fire Finger Score',
+          name: 'Fire Finger Single Player Game Score',
           caption: 'Your score of Fire Finger',
           description: 'You got ' + score + ' points.'
+        };
+
+        function callback(response) {
+          //alert("Post ID: " + response['post_id']);
+        }
+
+        FB.ui(obj, callback);
+      }
+
+
+      function postToFeedMuti(result, p1_score, p2_score) {
+
+        // calling the API ...
+        var obj = {
+          method: 'feed',
+          link: 'https://apps.facebook.com/fire-finger/',
+          picture: 'http://fire-finger.herokuapp.com/img/game-logo.png',
+          name: result + ' On Fire Finger Mutiplayer Game',
+          caption: result + ' ' + op_name + ' By score ' + p1_score + ' - ' + p2_score,
+          description: 'Test'
         };
 
         function callback(response) {
