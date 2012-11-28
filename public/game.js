@@ -691,11 +691,11 @@ window.onload = function() {
          */
 
         //Baseline
-        Crafty.e("2D,DOM,Color,Image").image('img/blueline.png').attr({
+        Crafty.e("2D,DOM,Color,Image").image('img/bluelinelong.png').attr({
             x: 0,
             y: 515,
             //Middle at 521, for now put at 519 to 523
-            w: 360,
+            //w: 360,
             h: 11
         });
         //The score text
@@ -748,14 +748,6 @@ window.onload = function() {
         /**
          * Opponent player
          */
-        
-        Crafty.e("2D,DOM,Text,Image").image('img/blueline.png').attr({
-            x: op_offset,
-            y: 520,
-            //Middle at 521, for now put at 519 to 523
-            w: width,
-            h: height
-        });
 
         //The opponent player score text
         Crafty.e("2D,DOM,Color").attr({
@@ -874,23 +866,78 @@ window.onload = function() {
                     Crafty.audio.play("type_correct");
                 }
             } else if (e.key == Crafty.keys["SPACE"]) {
-                player_text = "";
-                //Crafty.e('2D, T')
+                var missed = true;
                 Crafty("Words").each(function() {
                     if (this._textColor == '#AD1813') {
+                        missed = false;
+                        Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Perfect").textFont({
+                            size: '18px',
+                            family: 'Trebuchet MS'
+                        }).attr({
+                            x: -200,
+                            y: 480,
+                            w: width,
+                            alpha: 0.7
+                        }).css('text-align', 'center').tween({
+                            alpha: 0,
+                            y: 450
+                        }, FPS).textColor('#AD1813');
                         combo += 1;
                         score += (combo + 1) * this.text().length;
                         this.destroy();
                     } else if (this._textColor == '#D5401A') {
+                        missed = false;
+                        Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Cool").textFont({
+                            size: '18px',
+                            family: 'Trebuchet MS'
+                        }).attr({
+                            x: -200,
+                            y: 480,
+                            w: width,
+                            alpha: 0.7
+                        }).css('text-align', 'center').tween({
+                            alpha: 0,
+                            y: 450
+                        }, FPS).textColor('#D5401A');
                         combo = 0;
                         score += 1.3 * this.text().length;
                         this.destroy();
                     } else if (this._textColor == '#F6E82C') {
+                        missed = false;
+                        Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Bad").textFont({
+                            size: '18px',
+                            family: 'Trebuchet MS'
+                        }).attr({
+                            x: -200,
+                            y: 480,
+                            w: width,
+                            alpha: 0.7
+                        }).css('text-align', 'center').tween({
+                            alpha: 0,
+                            y: 450
+                        }, FPS).textColor('#F6E82C');
                         combo = 0;
                         score += 1.1 * this.text().length;
                         this.destroy();
                     }
                 });
+                if (missed == true) {
+                    Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Miss").attr({
+                        x: -200,
+                        y: 480,
+                        w: width,
+                        alpha: 0.7
+                    })
+                    .textFont({
+                        size: '18px',
+                        family: 'Trebuchet MS'
+                    })
+                    .css('text-align', 'center').tween({
+                        alpha: 0,
+                        y: 450
+                    }, FPS);
+                    hp -= 1;
+                }
             }
             Crafty("Player").each(function() {
                 this.text(player_text);
@@ -967,7 +1014,19 @@ window.onload = function() {
                     }
                     if (this.y > baseLine) {
                         this.alpha -= 0.1;
-                        if (this.alpha == 0.0) {
+                        if (this.alpha <= 0.0) {
+                            Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Fade").attr({
+                                x: -200,
+                                y: 480,
+                                w: width
+                            })
+                            .textFont({
+                                size: '18px',
+                                family: 'Trebuchet MS'
+                            }).css('text-align', 'center').tween({
+                                alpha: 0,
+                                y: 450
+                            }, FPS);
                             this.destroy();
                         }
                     }
