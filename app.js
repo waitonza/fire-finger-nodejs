@@ -130,6 +130,10 @@ io.sockets.on('connection', function (socket) {
     socket.room_id = msg.room_id;
     find_room_and_disconnect_by_session_id(socket.id);
     rooms[msg.room_id].count += 1;
+
+    if (rooms[msg.room_id].count == 2 && rooms[msg.room_id].player1['fb_id'] == msg.fb_id) {
+      rooms[msg.room_id].count -= 1;
+    }
     
     if(rooms[msg.room_id].count == 1) {
       rooms[msg.room_id].player1 = {};
