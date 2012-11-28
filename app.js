@@ -67,7 +67,7 @@ io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10);
   io.set('log level', 1); // reduce logging
-  io.set('close timeout', 20);
+  io.set('close timeout', 60);
 });
 
 io.sockets.on('connection', function(socket) {
