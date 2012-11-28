@@ -114,6 +114,10 @@ io.sockets.on('connection', function (socket) {
   socket.on('player_ty_sync', function(msg) {
     io.sockets.in('room#'+msg.room_id).emit('player_ty_sync', msg);
   });
+
+  socket.on('player_spcae_sync', function(msg) {
+    io.sockets.in('room#'+msg.room_id).emit('player_spcae_sync', msg);
+  });
   
   socket.on('end_of_the_round', function(msg) {
     //selected_room.set_round_started(false);

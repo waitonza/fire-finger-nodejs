@@ -11,6 +11,7 @@ var end_game = false;
 var rooms_lists;
 var isCanPlay = false;
 var op_offset = 380;
+var FPS;
 
 function startWith(str, pattern) {
     return pattern.length > 0 && pattern == str.substr(0, pattern.length);
@@ -640,7 +641,7 @@ window.onload = function() {
     
     Crafty.scene("Multi", function() {
         //Get the current FPS
-        var FPS = +Crafty.timer.getFPS();
+        FPS = +Crafty.timer.getFPS();
         //Set the base line that the word will start to disappear
         var baseLine = 535;
         //The current text of the play, current text that was typed.
@@ -870,6 +871,11 @@ window.onload = function() {
                 Crafty("Words").each(function() {
                     if (this._textColor == '#AD1813') {
                         missed = false;
+                        socket.json.emit('player_spcae_sync', {
+                            room_id: current_room_id, 
+                            current_player_id: current_player_id,
+                            space_status: 0
+                        });
                         Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Perfect").textFont({
                             size: '18px',
                             family: 'Trebuchet MS'
@@ -887,6 +893,11 @@ window.onload = function() {
                         this.destroy();
                     } else if (this._textColor == '#D5401A') {
                         missed = false;
+                        socket.json.emit('player_spcae_sync', {
+                            room_id: current_room_id, 
+                            current_player_id: current_player_id,
+                            space_status: 1
+                        });
                         Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Cool").textFont({
                             size: '18px',
                             family: 'Trebuchet MS'
@@ -904,6 +915,11 @@ window.onload = function() {
                         this.destroy();
                     } else if (this._textColor == '#F6E82C') {
                         missed = false;
+                        socket.json.emit('player_spcae_sync', {
+                            room_id: current_room_id, 
+                            current_player_id: current_player_id,
+                            space_status: 2
+                        });
                         Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Bad").textFont({
                             size: '18px',
                             family: 'Trebuchet MS'
@@ -922,6 +938,11 @@ window.onload = function() {
                     }
                 });
                 if (missed == true) {
+                    socket.json.emit('player_spcae_sync', {
+                        room_id: current_room_id, 
+                        current_player_id: current_player_id,
+                        space_status: 3
+                    });
                     Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Miss").attr({
                         x: -200,
                         y: 480,
@@ -1015,6 +1036,11 @@ window.onload = function() {
                     if (this.y > baseLine) {
                         this.alpha -= 0.1;
                         if (this.alpha <= 0.0) {
+                            socket.json.emit('player_spcae_sync', {
+                                room_id: current_room_id, 
+                                current_player_id: current_player_id,
+                                space_status: 4
+                            });
                             Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Fade").attr({
                                 x: -200,
                                 y: 480,
@@ -1170,6 +1196,153 @@ socket.on('word_sync', function(obj){
         }
     }
     
+});
+
+socket.on('player_spcae_sync', function(obj){
+    FPS = +Crafty.timer.getFPS();
+    if(obj.room_id == current_room_id) {
+        if (current_player_id == 1 && obj.current_player_id == 2) {
+            if (obj.space_status == 0) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Perfect").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#AD1813');
+            } else if (obj.space_status == 1) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Cool").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#D5401A');
+            } else if (obj.space_status == 2) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Bad").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#F6E82C');
+            } else if (obj.space_status == 3) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Miss").attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                })
+                .textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                })
+                .css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS);
+            } else if (obj.space_status == 4) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Fade").attr({
+                    x: 200,
+                    y: 480,
+                    w: width
+                })
+                .textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS);
+            }
+        }
+        else if (current_player_id == 2 && obj.current_player_id == 1) {
+            if (obj.space_status == 0) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Perfect").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#AD1813');
+            } else if (obj.space_status == 1) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Cool").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#D5401A');
+            } else if (obj.space_status == 2) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Bad").textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS).textColor('#F6E82C');
+            } else if (obj.space_status == 3) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Miss").attr({
+                    x: 200,
+                    y: 480,
+                    w: width,
+                    alpha: 0.7
+                })
+                .textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                })
+                .css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS);
+            } else if (obj.space_status == 4) {
+                Crafty.e('2D, DOM, Text, TextFormat, Tween').text("Fade").attr({
+                    x: 200,
+                    y: 480,
+                    w: width
+                })
+                .textFont({
+                    size: '18px',
+                    family: 'Trebuchet MS'
+                }).css('text-align', 'center').tween({
+                    alpha: 0,
+                    y: 450
+                }, FPS);
+            }
+        }
+    }
+
 });
 
 socket.on('player_connected', function(obj){
