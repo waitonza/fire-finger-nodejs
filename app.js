@@ -67,9 +67,10 @@ io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10);
   io.set('log level', 1); // reduce logging
+  io.set('close timeout', 20);
 });
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
   socket.emit('list_of_rooms', get_list_of_rooms());
 
   socket.on('list_of_rooms', function() {
@@ -78,6 +79,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function() {
     // make sure that socket's room_id variable is set, so we could keep table of connected users relevant
+    console.log('disconnect form other');
     if(socket.room_id != null) {
       rooms[socket.room_id].count -= 1;
       find_room_and_disconnect_by_session_id(socket.id);
