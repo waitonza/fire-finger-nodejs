@@ -1,11 +1,15 @@
 // Require HTTP module (to start server) and Socket.IO
 var express = require('express');
+var mongoose = require('mongoose');
 var http = require('http');
 var app = express();
 
 var server = module.exports = http.createServer(app);
 var io = require("socket.io").listen(server);
 var port = process.env.PORT;
+var db = mongoose.createConnection('mongodb://heroku_app9450213:jjtbcgk82tuns322rtqbcaf5tt@ds045157.mongolab.com:45157/heroku_app9450213');
+
+var schema = mongoose.Schema({ player_fb_id: String, player_score: Number });
 
 server.listen(port, function() {
   console.log("Listening on " + port);
@@ -104,6 +108,16 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('single_score_sent', function(msg) {
+
+    var Score = db.model('Score', schema);
+
+    var sc = new Score(msg);
+
+    sc.save(function (err) {
+      if (err) // ...
+        console.log('ok');
+    });
+
     console.log(msg);
   });
   
