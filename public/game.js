@@ -454,14 +454,14 @@ window.onload = function() {
         var counter = 0;
         // Crafty.audio.play("bg",-1,0.5);
         var pass = false;
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 50; i++) {
             if(rooms_lists.rooms[i].number_of_connected_players == 1) {
                 socket.json.emit('connect', {room_id: i, fb_id: userID, fb_name: my_name, fb_first_name: my_first_name, fb_last_name: my_last_name});
                 pass = true;
             }   
         }
         if (!pass) {
-            current_room_id = Math.floor((Math.random()*10));
+            current_room_id = Math.floor((Math.random()*50));
             socket.json.emit('connect', {room_id: current_room_id, fb_id: userID, fb_name: my_name, fb_first_name: my_first_name, fb_last_name: my_last_name});
         }
 

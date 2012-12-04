@@ -20,7 +20,7 @@ app.post('/', function (req, res) {
 // TODO make port configurable
 
 var buffer = []
-  , number_of_rooms = 10
+  , number_of_rooms = 50
   , rooms = []
   ;
 
@@ -92,8 +92,7 @@ io.sockets.on('connection', function(socket) {
     // make sure that socket's room_id variable is set, so we could keep table of connected users relevant
     console.log(msg);
     if(msg.room_id != null) {
-      //rooms[msg.room_id].count -= 1;
-      find_room_and_disconnect_by_session_id(socket.id);
+      rooms[msg.room_id].count -= 1;
       socket.leave('room#'+msg.room_id);
     }
     io.sockets.json.emit('list_of_rooms', get_list_of_rooms());
