@@ -98,6 +98,14 @@ io.sockets.on('connection', function(socket) {
     io.sockets.json.emit('list_of_rooms', get_list_of_rooms());
     console.log(get_list_of_rooms());
   });
+
+  socket.on('multi_score_sent', function(msg) {
+    console.log(msg);
+  });
+
+  socket.on('single_score_sent', function(msg) {
+    console.log(msg);
+  });
   
   socket.on('round_started', function(msg) {
     //console.log(msg);

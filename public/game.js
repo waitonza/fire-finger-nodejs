@@ -415,6 +415,7 @@ window.onload = function() {
                             hp -= this.text().length;
                             if (hp <= 0) {
                                 postToFeedSingle(score);
+                                socket.json.emit('single_score_sent', { player_fb_id: userID, player_score: score });
                                 Crafty.scene("Over");
                             }
                         } else {
@@ -1026,6 +1027,7 @@ window.onload = function() {
                                     player_score: Math.round(score), 
                                     op_score: Math.round(op_score),
                                 });
+                                socket.json.emit('multi_score_sent', { player_fb_id: userID, player_score: score });
                             }
                         } else {
                             score += this.text().length;
