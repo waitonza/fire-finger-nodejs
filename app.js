@@ -9,7 +9,17 @@ var io = require("socket.io").listen(server);
 var port = process.env.PORT;
 var db = mongoose.createConnection('mongodb://heroku_app9450213:jjtbcgk82tuns322rtqbcaf5tt@ds045157.mongolab.com:45157/heroku_app9450213');
 
-var schema = mongoose.Schema({ player_fb_id: String, player_score: Number });
+var singleSchema = mongoose.Schema({player_fb_id: String,
+                                    player_fb_fname: String,
+                                    player_fb_lname: String,
+                                    player_fb_pic_url : String,
+                                    player_score: Number });
+var mutiSchema = mongoose.Schema({player_fb_id: String,
+                                  player_fb_fname: String,
+                                  player_fb_lname: String,
+                                  player_fb_pic_url : String,
+                                  player_win: Number,
+                                  player_lose: Number });
 
 server.listen(port, function() {
   console.log("Listening on " + port);
@@ -30,8 +40,7 @@ var buffer = []
 
 for(var i = 0; i < number_of_rooms; i++) {
   rooms[i] = {count: 0}; //, round_started: false};
-}
-
+}   
 
 function get_list_of_rooms() {
   var list_of_rooms = {number_of_rooms: number_of_rooms, rooms: []}
@@ -104,21 +113,37 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('multi_score_sent', function(msg) {
-    console.log(msg);
-  });
+    mutiSchema
 
-  socket.on('single_score_sent', function(msg) {
+    var MutiScore = db.model('MutiScore', mutiSchema);
 
-    var Score = db.model('Score', schema);
+    var data = {};    
 
-    var sc = new Score(msg);
+    data['player_fb_id']
+    data['player_fb_fname']
+    data['player_fb_lname']
+    data['player_fb_pic_url']
+    data['player_win']
+    data['player_lose']
 
-    sc.save(function (err) {
+    var mc = new MutiScore(data);
+
+    mc.save(function (err) {
       if (err) // ...
-        console.log('ok');
+        console.log('Error to send single score to database');
     });
 
     console.log(msg);
+
+    var MutiScore = db.model('MutiScore', mutiSchema);
+
+    var mc = new MutiScore(player_sc);
+
+    mc.save(function (err) {
+      if (err) // ...
+        console.log('Error to send single score to database');
+    });
+
   });
   
   socket.on('round_started', function(msg) {

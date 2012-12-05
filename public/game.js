@@ -414,8 +414,14 @@ window.onload = function() {
                         if (this._textColor != "rgb(0,0,255)") {
                             hp -= this.text().length;
                             if (hp <= 0) {
-                                postToFeedSingle(score);
-                                socket.json.emit('single_score_sent', { player_fb_id: userID, player_score: score });
+                                postToFeedSingle(Math.round(score));
+                                socket.json.emit('single_score_sent', { 
+                                    player_fb_id: userID, 
+                                    player_fb_fname: my_first_name, 
+                                    player_fb_lname: my_last_name,
+                                    player_fb_pic_url : my_pic_url,
+                                    player_score: Math.round(score) 
+                                });
                                 Crafty.scene("Over");
                             }
                         } else {
@@ -1027,7 +1033,13 @@ window.onload = function() {
                                     player_score: Math.round(score), 
                                     op_score: Math.round(op_score),
                                 });
-                                socket.json.emit('multi_score_sent', { player_fb_id: userID, player_score: score });
+                                socket.json.emit('multi_score_sent', { 
+                                    player_fb_id: userID,
+                                    player_fb_fname: my_first_name,
+                                    player_fb_lname: my_last_name,
+                                    player_fb_pic_url : my_pic_url,
+                                    player_score_status: Number,
+                                });
                             }
                         } else {
                             score += this.text().length;
