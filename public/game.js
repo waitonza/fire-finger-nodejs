@@ -108,13 +108,31 @@ window.onload = function() {
         }).bind("MouseOut", function() {
             this.textColor("#ffffff");
         });
+        //Scoreboard
+        Crafty.e("Score,2D,DOM,Text,TextFormat,Mouse").text("SCOREBOARD").textColor("#ffffff").textFont({
+            size: "18px",
+            family: "Trebuchet MS"
+        }).attr({
+            x: 0,
+            y: 380,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click",function(){
+            Crafty.scene("Scoreboard");
+        })
+        .bind("MouseOver", function() {
+            this.textColor("#ff0000");
+        }).bind("MouseOut", function() {
+            this.textColor("#ffffff");
+        });
         //Credit text
         Crafty.e("Credit,2D,DOM,Text,TextFormat,Mouse").text("CREDIT").textColor("#ffffff").textFont({
             size: "18px",
             family: "Trebuchet MS"
         }).attr({
             x: 0,
-            y: 380,
+            y: 410,
             w: width,
             h: 20
         }).css('text-align', 'center').bind("MouseOver", function() {
@@ -152,6 +170,9 @@ window.onload = function() {
                 });
                 Crafty("Developed").each(function() {
                     this.alpha -= 0.05;
+                });
+                Crafty("Score").each(function() {
+                    this.alpha -= 0.05; 
                 });
                 if (counter == 50) {
                     if (isSingle) {
@@ -1135,6 +1156,67 @@ window.onload = function() {
             Crafty.scene("Start");
         });
     });
+    Crafty.scene("Scoreboard",function(){
+        $.get('https://www.mongolab.com/api/1/databases/heroku_app9450213/collections/singlescores?s={%22player_score%22:%20-1}&l=5&apiKey=50bde47ce4b0a041b38da4a3', function(data) {
+    for (var i = 0; i < data.length; i++) {
+         Crafty.e('2D,DOM,Text,TextFormat')
+            .text( data[i].player_fb_fname + ' ' + data[i].player_fb_lname + ' ' + data[i].player_score)
+            .attr({
+               x:-20,
+               y:100 + 50*i,
+               w: width,
+               h:20
+            })
+            .textFont({
+                size: "18px",
+                family: "Trebuchet MS"
+            }).css("text-align","center");
+            
+        Crafty.e("2D,DOM,Image").image(data[i].player_fb_pic_url).attr({
+            x: 500,
+            y: 100 + 50*i - 15,
+            w: 50,
+            h: 50
+            }).css("text-align","center");
+    }
+});
+        //The background image
+        Crafty.e("2D,DOM,Image").image("img/single_bg.jpg").attr({
+            x: 380 - 180,
+            y: 0,
+            w: 360,
+            h: height
+        });
+        Crafty.e("2D,DOM,Text,TextFormat")
+        .text("Leaderboard")
+        .textColor("#ffffff")
+        .textFont({
+            size: "24px",
+            family: "Trebuchet MS"
+        }).attr({
+            x: 0,
+            y: 50,
+            w: width,
+            h: 20
+        }).css("text-align","center");
+        Crafty.e("Back,2D,DOM,Text,TextFormat,Mouse").text("Back").textColor("#ffffff").textFont({
+            size: "18px",
+            family: "Trebuchet MS"
+        }).attr({
+            x: 0,
+            y: 380,
+            w: width,
+            h: 20
+        }).css('text-align', 'center')
+        .bind("Click",function(){
+            Crafty.scene("Start");
+        })
+        .bind("MouseOver", function() {
+            this.textColor("#ff0000");
+        }).bind("MouseOut", function() {
+            this.textColor("#ffffff");
+        });
+    })
     Crafty.scene("Loading", function() {
         Crafty.e().bind("EnterFrame", function() {
             load_counter++;
