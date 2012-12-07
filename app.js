@@ -85,7 +85,7 @@ io.configure(function () {
 
 io.sockets.on('connection', function(socket) {
   socket.emit('list_of_rooms', get_list_of_rooms());
-
+  
   socket.on('list_of_rooms', function() {
     socket.emit('list_of_rooms', get_list_of_rooms());  
   });
@@ -113,37 +113,66 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('multi_score_sent', function(msg) {
-    mutiSchema
-
+    /*
     var MutiScore = db.model('MutiScore', mutiSchema);
-
-    var data = {};    
-
-    data['player_fb_id']
-    data['player_fb_fname']
-    data['player_fb_lname']
-    data['player_fb_pic_url']
-    data['player_win']
-    data['player_lose']
-
-    var mc = new MutiScore(data);
-
-    mc.save(function (err) {
-      if (err) // ...
-        console.log('Error to send single score to database');
+    
+    MutiScore.findOne({"player_fb_id": msg.player_fb_id}, function(e,r) {
+      console.log(r);
+      if (r == null) {
+        var sc = new MutiScore(msg);
+        sc.save(function (err) {
+          if (err) // ...
+            console.log('error');
+        });
+        console.log('Create new player profile id : ' + msg.player_fb_id);
+      } else {
+        console.log('Update player profile id : ' + msg.player_fb_id);
+        // do your updates here
+        if (msg.player_score >= r.player_score) {
+          console.log('New score was update');
+          SingleScores.update({"player_fb_id": msg.player_fb_id}, {$set: { "player_score": msg.player_score }}, {upsert: true}, function(err) {
+            if (err) {
+              console.log('It cannot save!');
+            }
+          });
+        } else {
+          console.log("New score wasn't update");
+        }
+      }
     });
-
-    console.log(msg);
-
-    var MutiScore = db.model('MutiScore', mutiSchema);
-
-    var mc = new MutiScore(player_sc);
-
-    mc.save(function (err) {
-      if (err) // ...
-        console.log('Error to send single score to database');
+    */
+  
+  });
+  
+  socket.on('single_score_sent', function(msg) {
+    
+    var SingleScores = db.model('SingleScores', singleSchema);
+    
+    SingleScores.findOne({"player_fb_id": msg.player_fb_id}, function(e,r) {
+      console.log(r);
+      if (r == null) {
+        var sc = new SingleScores(msg);
+        sc.save(function (err) {
+          if (err) // ...
+            console.log('error');
+        });
+        console.log('Create new player profile id : ' + msg.player_fb_id);
+      } else {
+        console.log('Update player profile id : ' + msg.player_fb_id);
+        // do your updates here
+        if (msg.player_score >= r.player_score) {
+          console.log('New score was update');
+          SingleScores.update({"player_fb_id": msg.player_fb_id}, {$set: { "player_score": msg.player_score }}, {upsert: true}, function(err) {
+            if (err) {
+              console.log('It cannot save!');
+            }
+          });
+        } else {
+          console.log("New score wasn't update");
+        }
+      }
     });
-
+  
   });
   
   socket.on('round_started', function(msg) {
@@ -205,8 +234,7 @@ io.sockets.on('connection', function(socket) {
       socket.json.emit('player_connected', {player_id: 1, room_id: msg.room_id, player1: rooms[msg.room_id].player1});
     } else if(rooms[msg.room_id].count == 2) {
       // when second player has connected, 1st player could had moved up or down his default position, so show him right cordinates in buffer variable
-      io.sockets.in('room#'+msg.room_id).json.emit('player_connected', {player_id: 2, room_id: msg.room_id, player1: rooms[msg.room_id].player1, player2: rooms[msg.room_id].player2});// buffer: buffer 
-      //io.sockets.in('room#'+msg.room_id).json.emit('round_could_be_started', {room_id: socket.room_id});
+      io.sockets.in('room#'+msg.room_id).json.emit('player_connected', {player_id: 2, room_id: msg.room_id, player1: rooms[msg.room_id].player1, player2: rooms[msg.room_id].player2});// buffer: buffer
     }
     
     io.sockets.json.emit('list_of_rooms', get_list_of_rooms());
