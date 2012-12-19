@@ -24,7 +24,6 @@ window.fbAsyncInit = function() {
 
     // Additional init code here
     FB.getLoginStatus(function(response) {
-      console.log(response);
       
       if (response.status === 'connected') {
       // connected
@@ -71,7 +70,6 @@ window.fbAsyncInit = function() {
     var url = '/me?fields=id,name,first_name,last_name';
     FB.api(url, function(response) {
 
-      console.log(response);
       my_name = response.name;
       my_first_name = response.first_name;
       my_last_name = response.last_name;
