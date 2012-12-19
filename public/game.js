@@ -1454,6 +1454,7 @@ socket.on('player_connected', function(obj){
   }
   
   current_room_id = obj.room_id;
+  console.log('Your current room : ' + current_room_id);
   if(obj.room_id == current_room_id) {
     if(obj.player1 && obj.player2) {
         if (current_player_id == 1) {

@@ -25,6 +25,8 @@ server.listen(port, function() {
   console.log("Listening on " + port);
 });
 
+app.use(express.static(__dirname + '/public'));
+
 app.post('/', function (req, res) {
   res.sendfile(__dirname + '/public/index.html');
 });
