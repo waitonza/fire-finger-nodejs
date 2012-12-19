@@ -25,9 +25,29 @@ server.listen(port, function() {
   console.log("Listening on " + port);
 });
 
+app.use(express.static(__dirname + '/public/img'));
+app.use(express.static(__dirname + '/public/sound'));
+
 app.post('/', function (req, res) {
   res.sendfile(__dirname + '/public/index.html');
 });
+
+app.post('/crafty.js', function (req, res) {
+  res.sendfile(__dirname + '/public/crafty.js');
+});
+
+app.post('/dic.js', function (req, res) {
+  res.sendfile(__dirname + '/public/dic.js');
+});
+
+app.post('/facebookConnect.js', function (req, res) {
+  res.sendfile(__dirname + '/public/facebookConnect.js');
+});
+
+app.post('/game.js', function (req, res) {
+  res.sendfile(__dirname + '/public/game.js');
+});
+
 
 // TODO make port configurable
 
